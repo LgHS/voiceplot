@@ -1,5 +1,5 @@
 class WaveFormGenerator implements Generator {
-  void draw(ArrayList<Float> voiceData, HPGLGraphics hpgl, float width, float height) {
+  void draw(ArrayList<Float> voiceData, HPGLGraphics hpgl, float width, float height, boolean isRecording) {
     //rect(0, 0, width, height);
     for (int i = 0; i < voiceData.size() - 1; i++) {
       int x = (int) map(i, 0, voiceData.size() - 1, 0, width);

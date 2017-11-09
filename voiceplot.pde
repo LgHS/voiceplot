@@ -1,3 +1,11 @@
+/**
+ TODO
+ * timestamp
+ ***** signature
+ * adaptors
+ * random (no recording)
+ * 10print
+ **/
 import hpglgraphics.*;
 
 import java.text.*;
@@ -7,7 +15,7 @@ import java.time.format.*;
 
 import hpglgraphics.*;
 
-import controlP5.*;
+import controlP5.*;  
 import ddf.minim.*;
 
 ControlP5 cp5;
@@ -56,6 +64,7 @@ void setup() {
 
   generators.put("Wave Form", new WaveFormGenerator());
   generators.put("Joy Division", new JoyGenerator());
+  //generators.put("Joy Division 2", new JoyGenerator2());
   //generators.put("10print", new TenPrintGenerator());
   //generators.put("Test", new TestGenerator());
 
@@ -139,7 +148,7 @@ void draw() {
       tracePaperSize(size);
     }
 
-    currentGenerator.draw(voiceData, hpgl, drawingWidth, drawingHeight);
+    currentGenerator.draw(voiceData, hpgl, drawingWidth, drawingHeight, saveHpgl);
 
     if (signatureText.getText().length() > 0) {
       String text = signatureText.getText();
@@ -163,19 +172,14 @@ void draw() {
     saveBtn.show();
     signatureText.show();
   }
-  /*
-  fill(0, 0, 0, 0.6);
-   noStroke();
-   rect(0, 0, 100, height);
-   */
 }
 
 void tracePaperSize(Size size) {
   // offset manually since HPGLGraphics doesn't seem to handle embedded pushMatrix
-    float startX = -(size.getScaledPaperWidth() - size.getScaledCanvasWidth()) / 2;
-    float startY = -(size.getScaledPaperHeight() - size.getScaledCanvasHeight()) / 2;
+  float startX = -(size.getScaledPaperWidth() - size.getScaledCanvasWidth()) / 2;
+  float startY = -(size.getScaledPaperHeight() - size.getScaledCanvasHeight()) / 2;
   // rotate if landscape
-  if(size.getScaledPaperWidth() > size.getScaledPaperHeight()) {
+  if (size.getScaledPaperWidth() > size.getScaledPaperHeight()) {
     rect(startY, startX, size.getScaledPaperHeight(), size.getScaledPaperWidth());
     //rect(startX, startY, size.getScaledPaperWidth(), size.getScaledPaperHeight());
   } else {
@@ -206,11 +210,11 @@ void initControls() {
     .setValue("LGHS17");
 
   saveBtn = cp5.addButton("save")
-    .setPosition(20, 160)
+    .setPosition(20, 180)
     .setLabel("Save");
 
-  sizeList.setValue(0);
-  generatorList.setValue(0);
+  sizeList.setValue(1);
+  generatorList.setValue(2);
   generatorList.bringToFront();
   sizeList.bringToFront();
 }
