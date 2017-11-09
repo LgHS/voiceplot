@@ -13,19 +13,21 @@ class JoyGenerator implements Generator {
       noFill();
       beginShape();
       for (float x = 0; x < width; x++) {
-        //float ypos = map(noise(x/100 + xoff, y/100 + yoff), 0, 1, -100, 100);
-        float ypos = map(dataPoints.get(y), -1, 1, -200, 0);
-        float magnitude = x < width*0.5 ? constrain(map(x, width*0.3, width*0.5, 0, 1), 0, 100) : constrain(map(x, width*0.5, width*0.7, 1, 0), 0, 100);
-        ypos *= magnitude;
+        float ypos = map(noise(x/100 + xoff, y/100 + yoff), 0, 1, -100, 100);
+        //float ypos = map(dataPoints.get(y), -1, 1, -50, 0);
+        float magnitude = x < width*0.5 ? constrain(map(x, width*0.1, width*0.5, 0, 1), 0, 1) : constrain(map(x, width*0.5, width*0.9, 1, 0), 0, 1);
+        ypos *= magnitude*dataPoints.get(y);
         if (ypos > 0) ypos = 0;
         
         vertex(x, ypos);
+        
+        
       }
       endShape();
       popMatrix();
     }
 
-    //xoff += 0.01;
-    //yoff += -0.01;
+   // xoff += 0.01;
+    // yoff += -0.01;
   }
 }

@@ -41,7 +41,7 @@ int recordTime = 2000; // max record time in millis
 
 void setup() {
   size(1000, 707);
-
+  pixelDensity(displayDensity());
   timestamp = getCurrentTimeStamp();
   println(timestamp);
 
@@ -67,6 +67,7 @@ void setup() {
   hpgl.setPath("voiceplot.hpgl");
   hpgl.setPaperSize("A3");
   //hpgl.setSize(machineWidth, machineHeight);
+  smooth();
 }
 
 void draw() {
