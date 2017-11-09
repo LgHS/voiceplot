@@ -18,14 +18,16 @@ class JoyGenerator implements Generator {
         float magnitude = x < width*0.5 ? constrain(map(x, width*0.3, width*0.5, 0, 1), 0, 100) : constrain(map(x, width*0.5, width*0.7, 1, 0), 0, 100);
         ypos *= magnitude * dataPoints.get(y);
         if (ypos > 0) ypos = 0;
-        
+
         vertex(x, ypos);
+
+
       }
       endShape();
       popMatrix();
     }
 
-    //xoff += 0.01;
-    //yoff += -0.01;
+   // xoff += 0.01;
+    // yoff += -0.01;
   }
 }

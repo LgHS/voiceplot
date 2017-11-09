@@ -42,7 +42,7 @@ int recordTime = 2000; // max record time in millis
 
 void setup() {
   size(1000, 683); // 16158/11040 ratio (from HPGLGraphics code)
-
+  pixelDensity(displayDensity());
   timestamp = getCurrentTimeStamp();
 
   minim = new Minim(this);
@@ -65,6 +65,7 @@ void setup() {
   hpgl = (HPGLGraphics) createGraphics(width, height, HPGLGraphics.HPGL);
   hpgl.setPath("voiceplot.hpgl");
   hpgl.setPaperSize("A3");
+  smooth();
 }
 
 void draw() {
@@ -179,7 +180,7 @@ void tracePaperSize(Size size) {
     //rect(startX, startY, size.getScaledPaperWidth(), size.getScaledPaperHeight());
   } else {
     rect(startX, startY, size.getScaledPaperWidth(), size.getScaledPaperHeight());
-    rect(startX, startY, size.getScaledPaperWidth(), size.getScaledPaperHeight());    
+    rect(startX, startY, size.getScaledPaperWidth(), size.getScaledPaperHeight());
   }
 }
 
