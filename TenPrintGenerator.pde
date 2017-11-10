@@ -65,4 +65,13 @@ class TenPrintGenerator implements Generator {
       }
     }
   }
+  
+  
+  boolean hasSignature() {
+    return true;
+  }
+  
+  boolean hasPaperTrace() {
+    return true;
+  }
 }

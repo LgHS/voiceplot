@@ -1,12 +1,12 @@
 /**
  TODO
- * timestamp
  * bugfix textfield not updating
  * bugfix signature position
- * test pen
  * adaptors
  * random (no recording)
  * hotkeys
+ ***** test pen
+ ***** timestamp
  ***** 10print
  ***** signature
  **/
@@ -56,13 +56,14 @@ void setup() {
   size(1000, 683); // 16158/11040 ratio (from HPGLGraphics code)
   pixelDensity(displayDensity());
   timestamp = getCurrentTimeStamp();
+  println(timestamp);
 
   minim = new Minim(this);
-  in = minim.getLineIn(Minim.STEREO, 4);
-  recorder = minim.createRecorder(in, "voiceplot.wav");
+  in = minim.getLineIn(Minim.MONO, 4);
+  recorder = minim.createRecorder(in, timestamp + "_voiceplot.wav");
   recordTimer = 0;
 
-  sizes.put("13x18cm", new Size(130, 180, 90, 150, true));
+  sizes.put("13x18cm", new Size(130, 180, 90, 130, true));
   //sizes.put("A4 30x21cm", new Size(297, 210, 217, 150, false));
   sizes.put("30x21cm", new Size(297, 210, 217, 150, true));
 
@@ -70,13 +71,14 @@ void setup() {
   generators.put("Joy Division", new JoyGenerator());
   //generators.put("Joy Division 2", new JoyGenerator2());
   generators.put("10print", new TenPrintGenerator());
-  //generators.put("Test", new TestGenerator());
+  //generators.put("Pen Test", new PenTestGenerator());
+  generators.put("Untitled4", new Untitled4Generator());
 
   cp5 = new ControlP5(this);
   initControls();
 
   hpgl = (HPGLGraphics) createGraphics(width, height, HPGLGraphics.HPGL);
-  hpgl.setPath("voiceplot.hpgl");
+  hpgl.setPath(timestamp + "_voiceplot.hpgl");
   hpgl.setPaperSize("A3");
   smooth();
 }
@@ -140,11 +142,13 @@ void drawCanvas() {
   // begin HPGL record
   if (saveHpgl) {
     beginRecord(hpgl);
+    /*
     // wait for pendown
     rect(0, height - 50, 50, 50);
     rect(0, height - 50, 50, 50);
     rect(0, height - 50, 50, 50);
     rect(0, height - 50, 50, 50);
+    */
   }
 
   pushMatrix();
@@ -161,15 +165,19 @@ void drawCanvas() {
   }
 
   // trace paper size
-  if (size.isTraceLimits()) {
+  if (currentGenerator.hasPaperTrace() && size.isTraceLimits()) {
     tracePaperSize(size);
   }
 
   currentGenerator.draw(voiceData, hpgl, drawingWidth, drawingHeight, saveHpgl);
 
-  if (signatureText.getText().length() > 0) {
+  if (currentGenerator.hasSignature() && signatureText.getText().length() > 0) {
     String text = signatureText.getText();
     float verticalMargin = (paperHeight - drawingHeight) / 2;
+    if(saveHpgl) {
+      hpgl.selectPen(1);
+    }
+    
     textSize(drawingHeight / 50);
     fill(0);
     text(signatureText.getText(), drawingWidth - textWidth(text), drawingHeight + (verticalMargin / 2));
@@ -246,6 +254,9 @@ public void toggleRecording(boolean toggled) {
   if (toggled) {
     voiceData.clear();
     hasRecord = false;
+    timestamp = getCurrentTimeStamp();
+    recorder = minim.createRecorder(in, timestamp + "_voiceplot.wav");
+    hpgl.setPath(timestamp + "_voiceplot.hpgl");
     recorder.beginRecord();
     loop();
     recordTimer = millis();
@@ -277,5 +288,5 @@ public void save() {
 }
 
 public String getCurrentTimeStamp() {
-  return DateTimeFormatter.ofPattern("mm-dd-").format(LocalDateTime.now());
+  return DateTimeFormatter.ofPattern("MM-dd_HH-mm").format(LocalDateTime.now());
 }

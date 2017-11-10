@@ -1,3 +1,4 @@
 *.hpgl
 *.wav
 .DS_Store
+application.*/

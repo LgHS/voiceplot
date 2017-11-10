@@ -33,4 +33,12 @@ class JoyGenerator2 implements Generator {
    // xoff += 0.01;
     // yoff += -0.01;
   }
+  
+  boolean hasSignature() {
+    return true;
+  }
+  
+  boolean hasPaperTrace() {
+    return true;
+  }
 }

@@ -9,4 +9,12 @@ class WaveFormGenerator implements Generator {
       line(x, halfHeight + voiceData.get(i) * waveHeight, nextX, halfHeight + voiceData.get(i+1) * waveHeight);
     }
   }
+  
+  boolean hasSignature() {
+    return true;
+  }
+  
+  boolean hasPaperTrace() {
+    return true;
+  }
 }

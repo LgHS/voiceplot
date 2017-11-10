@@ -26,8 +26,19 @@ class JoyGenerator implements Generator {
       endShape();
       popMatrix();
     }
-
-   // xoff += 0.01;
-    // yoff += -0.01;
+    
+    String text = signatureText.getText();
+    textSize(height / 6);
+    fill(0, 255, 0);
+    text(text, width / 2 - textWidth(text) / 2, height / 2);
+    noFill();
+  }
+  
+  boolean hasSignature() {
+    return false;
+  }
+  
+  boolean hasPaperTrace() {
+    return true;
   }
 }
