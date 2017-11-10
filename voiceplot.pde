@@ -1,10 +1,14 @@
 /**
  TODO
  * timestamp
- ***** signature
+ * bugfix textfield not updating
+ * bugfix signature position
+ * test pen
  * adaptors
  * random (no recording)
- * 10print
+ * hotkeys
+ ***** 10print
+ ***** signature
  **/
 import hpglgraphics.*;
 
@@ -59,13 +63,13 @@ void setup() {
   recordTimer = 0;
 
   sizes.put("13x18cm", new Size(130, 180, 90, 150, true));
-  sizes.put("A4 30x21cm", new Size(297, 210, 217, 150, false));
-  sizes.put("A3 30x21cm", new Size(297, 210, 217, 150, true));
+  //sizes.put("A4 30x21cm", new Size(297, 210, 217, 150, false));
+  sizes.put("30x21cm", new Size(297, 210, 217, 150, true));
 
   generators.put("Wave Form", new WaveFormGenerator());
   generators.put("Joy Division", new JoyGenerator());
   //generators.put("Joy Division 2", new JoyGenerator2());
-  //generators.put("10print", new TenPrintGenerator());
+  generators.put("10print", new TenPrintGenerator());
   //generators.put("Test", new TestGenerator());
 
   cp5 = new ControlP5(this);
@@ -78,16 +82,14 @@ void setup() {
 }
 
 void draw() {
-  stroke(1);
-  if (recorder.isRecording()) {
-    background(255, 230, 230);
-  } else if (hasRecord) {
-    background(200);
-  } else {
-    background(150);
-  }
-
   if (!hasRecord) {
+    stroke(0);
+    if (recorder.isRecording()) {
+      background(0, 255, 0);
+    } else {
+      background(150);
+    }
+    
     for (int i = 0; i < in.bufferSize() - 1; i++)
     {
       float d = in.left.get(i);
@@ -110,71 +112,81 @@ void draw() {
     saveBtn.hide();
     signatureText.hide();
   } else {
-    Size size = (Size) sizeList.getItem(currentSizeIndex).get("value");
-    Generator currentGenerator = (Generator) generatorList.getItem(currentGeneratorIndex).get("value");
-    int offsetX = (width - (int) size.getScaledCanvasWidth()) / 2;
-    int offsetY = (height - (int) size.getScaledCanvasHeight()) / 2;
-
-    float drawingWidth = size.getScaledCanvasWidth();
-    float drawingHeight = size.getScaledCanvasHeight();
-    float paperWidth = size.getScaledPaperWidth();
-    float paperHeight = size.getScaledPaperHeight();
-
-    // begin HPGL record
-    if (saveHpgl) {
-      beginRecord(hpgl);
-      // wait for pendown
-      rect(0, height - 50, 50, 50);
-      rect(0, height - 50, 50, 50);
-      rect(0, height - 50, 50, 50);
-      rect(0, height - 50, 50, 50);
-    }
-
-    pushMatrix();
-    // landscape, we need to rotate
-    if (size.getPaperWidth() > size.getPaperHeight()) {
-      translate(offsetX + width / 2, offsetY);
-      rotate(PI/2);
-      drawingWidth = size.getScaledCanvasHeight();
-      drawingHeight = size.getScaledCanvasWidth();
-      paperWidth = size.getScaledPaperHeight();
-      paperHeight = size.getScaledPaperWidth();
-    } else {
-      translate(offsetX, offsetY);
-    }
-
-    // trace paper size
-    if (size.isTraceLimits()) {
-      tracePaperSize(size);
-    }
-
-    currentGenerator.draw(voiceData, hpgl, drawingWidth, drawingHeight, saveHpgl);
-
-    if (signatureText.getText().length() > 0) {
-      String text = signatureText.getText();
-      float verticalMargin = (paperHeight - drawingHeight) / 2;
-      textSize(drawingHeight / 50);
-      fill(0);
-      text(signatureText.getText(), drawingWidth - textWidth(text), drawingHeight + (verticalMargin / 4));
-      noFill();
-    }
-
-    //popMatrix();
-    popMatrix();
-    // end HPGL record
-    if (saveHpgl) {
-      endRecord();
-      saveHpgl = false;
-    }
-
     generatorList.show();
     sizeList.show();
     saveBtn.show();
-    signatureText.show();
+    signatureText.show();    
+  }
+}
+
+void drawCanvas() {
+  if (!hasRecord) {
+    return;
+  }
+
+  background(200);
+  stroke(0);
+
+  Size size = (Size) sizeList.getItem(currentSizeIndex).get("value");
+  Generator currentGenerator = (Generator) generatorList.getItem(currentGeneratorIndex).get("value");
+  int offsetX = (width - (int) size.getScaledCanvasWidth()) / 2;
+  int offsetY = (height - (int) size.getScaledCanvasHeight()) / 2;
+
+  float drawingWidth = size.getScaledCanvasWidth();
+  float drawingHeight = size.getScaledCanvasHeight();
+  float paperWidth = size.getScaledPaperWidth();
+  float paperHeight = size.getScaledPaperHeight();
+
+  // begin HPGL record
+  if (saveHpgl) {
+    beginRecord(hpgl);
+    // wait for pendown
+    rect(0, height - 50, 50, 50);
+    rect(0, height - 50, 50, 50);
+    rect(0, height - 50, 50, 50);
+    rect(0, height - 50, 50, 50);
+  }
+
+  pushMatrix();
+  // landscape, we need to rotate
+  if (size.getPaperWidth() > size.getPaperHeight()) {
+    translate(offsetX + width / 2, offsetY);
+    rotate(PI/2);
+    drawingWidth = size.getScaledCanvasHeight();
+    drawingHeight = size.getScaledCanvasWidth();
+    paperWidth = size.getScaledPaperHeight();
+    paperHeight = size.getScaledPaperWidth();
+  } else {
+    translate(offsetX, offsetY);
+  }
+
+  // trace paper size
+  if (size.isTraceLimits()) {
+    tracePaperSize(size);
+  }
+
+  currentGenerator.draw(voiceData, hpgl, drawingWidth, drawingHeight, saveHpgl);
+
+  if (signatureText.getText().length() > 0) {
+    String text = signatureText.getText();
+    float verticalMargin = (paperHeight - drawingHeight) / 2;
+    textSize(drawingHeight / 50);
+    fill(0);
+    text(signatureText.getText(), drawingWidth - textWidth(text), drawingHeight + (verticalMargin / 2));
+    noFill();
+  }
+
+  //popMatrix();
+  popMatrix();
+  // end HPGL record
+  if (saveHpgl) {
+    endRecord();
+    saveHpgl = false;
   }
 }
 
 void tracePaperSize(Size size) {
+  fill(255);
   // offset manually since HPGLGraphics doesn't seem to handle embedded pushMatrix
   float startX = -(size.getScaledPaperWidth() - size.getScaledCanvasWidth()) / 2;
   float startY = -(size.getScaledPaperHeight() - size.getScaledCanvasHeight()) / 2;
@@ -186,6 +198,7 @@ void tracePaperSize(Size size) {
     rect(startX, startY, size.getScaledPaperWidth(), size.getScaledPaperHeight());
     rect(startX, startY, size.getScaledPaperWidth(), size.getScaledPaperHeight());
   }
+  noFill();
 }
 
 void initControls() {
@@ -221,10 +234,12 @@ void initControls() {
 
 void sizeList(int n) {
   currentSizeIndex = n;
+  drawCanvas();
 }
 
 void generatorList(int n) {
   currentGeneratorIndex = n;
+  drawCanvas();
 }
 
 public void toggleRecording(boolean toggled) {
@@ -238,12 +253,27 @@ public void toggleRecording(boolean toggled) {
     recorder.endRecord();
     recordTimer = 0;
     hasRecord = true;
+    drawCanvas();
+  }
+}
+
+public void signatureText(String theText) {
+   drawCanvas(); 
+}
+
+void controlEvent(ControlEvent theEvent) {
+  if(theEvent.isAssignableFrom(Textfield.class)) {
+    println("controlEvent: accessing a string from controller '"
+            +theEvent.getName()+"': "
+            +theEvent.getStringValue()
+            );
   }
 }
 
 public void save() {
   println("save HPGL");
   saveHpgl = true;
+  drawCanvas();
 }
 
 public String getCurrentTimeStamp() {

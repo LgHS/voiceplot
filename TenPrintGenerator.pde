@@ -1,15 +1,19 @@
 class TenPrintGenerator implements Generator {
-  int spacing = 8;
-  float maxDist = 0.0f;
+  int spacing;
   ArrayList<PVector> redLines = new ArrayList<PVector>();
   ArrayList<PVector> blackLines = new ArrayList<PVector>();
   float paperWidth;
   float paperHeight;
-  float seed = random(1);
+  ArrayList<Float> dataPoints;
 
-  void draw(ArrayList<Float> dataPoints, HPGLGraphics hpgl, float myWidth, float myHeight, boolean isRecording) {
+  void draw(ArrayList<Float> myDataPoints, HPGLGraphics hpgl, float myWidth, float myHeight, boolean isRecording) {
     paperWidth = myWidth;
     paperHeight = myHeight;
+    dataPoints = myDataPoints;
+    spacing = 5;
+    
+    redLines.clear();
+    blackLines.clear();
     moveInGrid();
     
     if (isRecording) {
@@ -25,19 +29,25 @@ class TenPrintGenerator implements Generator {
   void moveInGrid() {
     float cols = paperWidth/spacing;
     float rows = paperHeight/spacing;
-    maxDist = dist(0, 0, paperWidth/2, paperHeight/2);
     for (int i = 0; i < rows; i +=1) {
       int y = i*spacing;
       for (int j = 0; j < cols; j += 1) {
         int x = j * spacing;
-        storeLines(x, y);
+        storeLines(y, x);
       }
     }
   }
+  
   void storeLines(float x, float y) {
-    float p = map(x, paperWidth*.1, paperWidth*.9, 0, 1);
-
-    if (seed < p) {
+    float p = map(x, 0, paperHeight, 0, 1);
+    int dataIndex = (int) ((y / paperWidth) * dataPoints.size());
+    if(dataIndex > dataPoints.size()) {
+      return;
+    }
+    float dataValue = map(dataPoints.get(dataIndex), -1, 1, 0, 1);
+    float seed = random(1);
+        
+    if (seed < p * 2 - dataValue) {
       redLines.add(new PVector(x, y));
     } else {
       blackLines.add(new PVector(x, y));
@@ -48,10 +58,10 @@ class TenPrintGenerator implements Generator {
     for (PVector v : lines) {
       if (dir == 0) {
         stroke(0);
-        line(v.x, v.y, v.x+spacing, v.y+spacing);
+        line(v.y, v.x, v.y+spacing, v.x+spacing);
       } else if (dir == 1) {
         stroke(255, 0, 0);
-        line(v.x+spacing, v.y, v.x, v.y+spacing);
+        line(v.y+spacing, v.x, v.y, v.x+spacing);
       }
     }
   }
