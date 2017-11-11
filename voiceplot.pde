@@ -65,6 +65,7 @@ void setup() {
   sizes.put("13x18cm", new Size(130, 180, 90, 130, true));
   //sizes.put("A4 30x21cm", new Size(297, 210, 217, 150, false));
   sizes.put("30x21cm", new Size(297, 210, 217, 150, true));
+  sizes.put("21x29cm", new Size(210, 297, 150, 217, false));
 
   generators.put("Wave Form", new WaveFormGenerator());
   generators.put("Joy Division", new JoyGenerator());
@@ -173,7 +174,7 @@ void drawCanvas() {
 
   currentGenerator.draw(voiceData, hpgl, drawingWidth, drawingHeight, saveHpgl);
 
-  if (currentGenerator.hasSignature() && signatureText.getText().length() > 0) {
+  if (currentGenerator.hasSignature() && signatureText.getText().length() > 0 && drawingWidth < drawingHeight) {
     String text = signatureText.getText();
     float verticalMargin = (paperHeight - drawingHeight) / 2;
     if(saveHpgl) {
@@ -183,6 +184,7 @@ void drawCanvas() {
     textSize(drawingHeight / 40);
     fill(0);
     text(signatureText.getText(), drawingWidth - textWidth(text), drawingHeight + (verticalMargin / 2));
+    
     noFill();
   }
 
@@ -237,7 +239,7 @@ void initControls() {
     .setLabel("Save");
 
   sizeList.setValue(1);
-  generatorList.setValue(2);
+  generatorList.setValue(5);
   generatorList.bringToFront();
   sizeList.bringToFront();
 }
