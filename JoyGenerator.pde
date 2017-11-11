@@ -27,15 +27,20 @@ class JoyGenerator implements Generator {
       popMatrix();
     }
     
+    if(isRecording) {
+      hpgl.selectPen(2); 
+    }
+    /*
     String text = signatureText.getText();
-    textSize(height / 6);
+    textSize(height / 2);
     fill(0, 255, 0);
     text(text, width / 2 - textWidth(text) / 2, height / 2);
     noFill();
+    */
   }
   
   boolean hasSignature() {
-    return false;
+    return true;
   }
   
   boolean hasPaperTrace() {

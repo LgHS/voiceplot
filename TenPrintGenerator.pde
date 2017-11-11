@@ -47,7 +47,8 @@ class TenPrintGenerator implements Generator {
     float dataValue = map(dataPoints.get(dataIndex), -1, 1, 0, 1);
     float seed = random(1);
         
-    if (seed < p * 2 - dataValue) {
+  //if (seed < p * 2 - dataValue) {
+  if(seed < p) {
       redLines.add(new PVector(x, y));
     } else {
       blackLines.add(new PVector(x, y));

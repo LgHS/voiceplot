@@ -1,4 +1,4 @@
-class Untitled4Generator {
+class Untitled4Generator implements Generator {
   /* 
    Part of the ReCode Project (http://recodeproject.com)
    Based on "Untitled 4" by Various
@@ -12,13 +12,16 @@ class Untitled4Generator {
   // as the original in Computer Graphics and Art.  This is detailed 
   // in the array "rotated" below.
 
-  int cols = 25;
-  int rows = 36;
+  int cols = 12;
+  int rows; // calculated from cols
+  boolean isRecording;
 
-  void draw(ArrayList<Float> dataPoints, HPGLGraphics hpgl, float width, float height, boolean  isRecording) {
-    int[] rotated = {
-      0, 3, 5, 8, 6, 9, 4, 14, 14, 15, 16, 16, 24, 20, 20, 21, 25, 29, 25, 28, 29, 31, 35, 35, 36};
-    column(36, 4, 36, rotated);
+  void draw(ArrayList<Float> dataPoints, HPGLGraphics hpgl, float width, float height, boolean  myIsRecording) {
+    //cols = (int) width / 18;
+    float ratio = height / width;
+    rows = (int) (cols * ratio) + 1;
+    isRecording = myIsRecording;
+    column((int) width / cols, 2, rows);
   }
 
   void element(int wide, int spacing) {
@@ -27,36 +30,45 @@ class Untitled4Generator {
     }
   }
 
-  void column(int wide, int spacing, int total, int[] rotated) {
-
+  void column(int wide, int spacing, int total) {
     // create a 2D array, populate each column with the appropriate number
     // of rotated elements, then shuffle the columns
 
     int[][] numbers = new int[cols][rows];
     for (int i = 0; i < cols; i++) {
       for (int j= 0; j < rows; j++) {
-        if (rotated[i] > 0) {
+        if (random(1) > 0.2) {
           numbers[i][j] = 1;
         } else {
           numbers[i][j] = 0;
         }
-        rotated[i] = rotated[i] - 1;
+        //rotated[i] = rotated[i] - 1;
       }
     }
     shuffle(numbers);
 
     // draw according to instructions in the array (1 = rotated)
 
-    for (int z = 0; z < cols; z++) {
-      for (int m = 0; m < total; m++) {
-        if (numbers[z][m] < 1) {
+    for (int s = 0; s < cols; s++) {
+      for (int t = 0; t < total; t++) {
+        if (numbers[s][t] < 1) {
           pushMatrix();
-          translate(z*wide, (wide*m));
+          translate(s*wide, (wide*t));
           element(wide, spacing);
           popMatrix();
-        } else {
+        }
+      }
+    }
+
+    //stroke(0, 255, 0);
+    if (isRecording) {
+      //hpgl.selectPen(2);
+    }
+    for (int z = 0; z < cols; z++) {
+      for (int m = 0; m < total; m++) {
+        if (numbers[z][m] >= 1) {
           pushMatrix();
-          translate(z*wide, wide*(m+1));
+          translate(z*wide, (wide*m));
           rotate(radians(270));
           element(wide, spacing);
           popMatrix();
@@ -65,26 +77,26 @@ class Untitled4Generator {
     }
 
     // draw in some white lines to simulate depth
-
+    /*
     for (int x = 1; x < cols-1; x++) {
-      for (int y= 0; y < rows-1; y++) {
-        if ((numbers[x][y] == 1) && (numbers[x][y+1] == 0)) {
-          stroke(255);
-          line(x*wide, ((y+1)*wide), ((x+1)*wide), ((y+1)*wide));
-        }
-      }
-    }
-
-    for (int x = 1; x < cols-1; x++) {
-      for (int y= 0; y < rows; y++) {
-        if ((numbers[x][y] == 1) && (numbers[x+1][y] == 0)) {
-          stroke(255);
-          line((x+1)*wide, y*wide, (x+1)*wide, (y+1)*wide);
-        }
-      }
-    }
+     for (int y= 0; y < rows-1; y++) {
+     if ((numbers[x][y] == 1) && (numbers[x][y+1] == 0)) {
+     stroke(255);
+     line(x*wide, ((y+1)*wide), ((x+1)*wide), ((y+1)*wide));
+     }
+     }
+     }
+     
+     for (int x = 1; x < cols-1; x++) {
+     for (int y= 0; y < rows; y++) {
+     if ((numbers[x][y] == 1) && (numbers[x+1][y] == 0)) {
+     stroke(255);
+     line((x+1)*wide, y*wide, (x+1)*wide, (y+1)*wide);
+     }
+     }
+     }
+     */
   }
-
 
 
   //Fisher-Yates shuffle, good times!
@@ -99,5 +111,13 @@ class Untitled4Generator {
         numbers[k][j] = temp1;
       }
     }
+  }
+
+  boolean hasSignature() {
+    return true;
+  }
+
+  boolean hasPaperTrace() {
+    return true;
   }
 }

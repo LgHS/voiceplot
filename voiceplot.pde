@@ -56,10 +56,9 @@ void setup() {
   size(1000, 683); // 16158/11040 ratio (from HPGLGraphics code)
   pixelDensity(displayDensity());
   timestamp = getCurrentTimeStamp();
-  println(timestamp);
 
   minim = new Minim(this);
-  in = minim.getLineIn(Minim.MONO, 4);
+  in = minim.getLineIn(Minim.STEREO, 4);
   recorder = minim.createRecorder(in, timestamp + "_voiceplot.wav");
   recordTimer = 0;
 
@@ -73,6 +72,9 @@ void setup() {
   generators.put("10print", new TenPrintGenerator());
   //generators.put("Pen Test", new PenTestGenerator());
   generators.put("Untitled4", new Untitled4Generator());
+  generators.put("Circles", new CirclesGenerator());
+  generators.put("Circles2Colors", new CirclesTwoColorsGenerator());
+  generators.put("Perlin Noise", new PerlinGenerator());
 
   cp5 = new ControlP5(this);
   initControls();
@@ -178,7 +180,7 @@ void drawCanvas() {
       hpgl.selectPen(1);
     }
     
-    textSize(drawingHeight / 50);
+    textSize(drawingHeight / 40);
     fill(0);
     text(signatureText.getText(), drawingWidth - textWidth(text), drawingHeight + (verticalMargin / 2));
     noFill();
@@ -256,7 +258,6 @@ public void toggleRecording(boolean toggled) {
     hasRecord = false;
     timestamp = getCurrentTimeStamp();
     recorder = minim.createRecorder(in, timestamp + "_voiceplot.wav");
-    hpgl.setPath(timestamp + "_voiceplot.hpgl");
     recorder.beginRecord();
     loop();
     recordTimer = millis();
@@ -284,6 +285,8 @@ void controlEvent(ControlEvent theEvent) {
 public void save() {
   println("save HPGL");
   saveHpgl = true;
+  String generatorName = (String) generatorList.getItem(currentGeneratorIndex).get("name");
+  hpgl.setPath(timestamp + "_" + generatorName.replaceAll("\\W+", "") + ".hpgl");
   drawCanvas();
 }
 
